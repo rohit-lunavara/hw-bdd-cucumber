@@ -26,13 +26,35 @@ end
 #  "When I check the following ratings: G"
 
 When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
-  # HINT: use String#split to split up the rating_list, then
-  #   iterate over the ratings and reuse the "When I check..." or
-  #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
-  fail "Unimplemented"
+  ratings = rating_list.split(' ')
+  ratings.each do
+    |rating|
+    if uncheck
+      uncheck('ratings_' + rating)
+    else
+      check('ratings_' + rating)
+    end
+  end
+end
+
+Given(/^I click "(.*)"$/) do |button|
+  click_button(button)
+end
+
+Then(/^I should (not )?see movies with the following ratings: (.*)$/) do |dont_show, rating_list|
+  ratings = rating_list.split(' ')
+  all('#movies tr > td:nth-child(2)').each do |td|
+    if dont_show
+      ratings.should_not include td.text
+    else
+      ratings.should include td.text
+    end
+  end
 end
 
 Then /I should see all the movies/ do
   # Make sure that all the movies in the app are visible in the table
-  fail "Unimplemented"
+  # -1 because of the header
+  rows = all('#movies tr').size - 1
+  expect(rows).to eq 10
 end
