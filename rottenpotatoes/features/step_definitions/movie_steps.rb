@@ -3,7 +3,6 @@
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
     # each returned element will be a hash whose key is the table header.
-    # you should arrange to add that movie to the database here.
     Movie.create(:title => movie['title'], :rating => movie['rating'], :release_date => movie['release_date'])
   end
 end
@@ -16,14 +15,10 @@ end
 #   on the same page
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
-  #  ensure that that e1 occurs before e2.
   #  page.body is the entire content of the page as a string.
-  fail "Unimplemented"
+  content = page.body
+  expect(content.index(e1)).to be < content.index(e2)
 end
-
-# Make it easier to express checking or unchecking several boxes at once
-#  "When I uncheck the following ratings: PG, G, R"
-#  "When I check the following ratings: G"
 
 When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   ratings = rating_list.split(' ')
@@ -53,7 +48,6 @@ Then(/^I should (not )?see movies with the following ratings: (.*)$/) do |dont_s
 end
 
 Then /I should see all the movies/ do
-  # Make sure that all the movies in the app are visible in the table
   # -1 because of the header
   rows = all('#movies tr').size - 1
   expect(rows).to eq 10
